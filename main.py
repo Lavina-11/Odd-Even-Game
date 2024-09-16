@@ -10,10 +10,12 @@ cap.set(4, 480)
 
 detector = HandDetector(maxHands=1)
 
+target=20
 timer = 0
 stateResult = False
 startGame = False
-total=0
+total = 0
+score=[0,0]
 
 while True:
     imgBG = cv2.imread("resources/bg.png")
@@ -25,7 +27,7 @@ while True:
     hands, img = detector.findHands(imgScaled)
 
     if startGame:
-        
+
         if stateResult is False:
             timer = time.time() - initialTime + 1
             cv2.putText(
@@ -61,15 +63,25 @@ while True:
                     imgAI = cv2.imread(f"resources/{num}.png", cv2.IMREAD_UNCHANGED)
                     imgBG = cvzone.overlayPNG(imgBG, imgAI, (149, 330))
 
-                    if (playerMove!=num):
-                        total+=1
+                    if playerMove != num:
+                        total += playerMove
+                    if playerMove==num:
+                      if total<target:
+                        score[1]+=1
+                      else:
+                        score[0]+=1
+                    
 
     imgBG[234:654, 795:1195] = imgScaled
 
     if stateResult:
         imgBG = cvzone.overlayPNG(imgBG, imgAI, (149, 330))
-    
-    cv2.putText(imgBG, str(total), (410, 375), cv2.FONT_HERSHEY_PLAIN, 4, (255, 255, 255), 6)
+
+    cv2.putText(
+        imgBG, str(total), (605, 535), cv2.FONT_HERSHEY_COMPLEX, 3, (255, 0, 255), 4
+    )
+    cv2.putText(imgBG, str(score[0]), (410, 215), cv2.FONT_HERSHEY_PLAIN, 4, (255, 255, 255), 6)
+    cv2.putText(imgBG, str(score[1]), (1112, 215), cv2.FONT_HERSHEY_PLAIN, 4, (255, 255, 255), 6)
 
     cv2.imshow("BG", imgBG)
 
